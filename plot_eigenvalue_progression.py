@@ -57,11 +57,11 @@ def build_cost_hamiltonian(values: list, duration: list, max_duration: int) -> S
     """
     nQubits = len(values)
     nAncillas = int(np.ceil(np.log2(max_duration)))
+    cost_hamiltonian = (-1) * sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)]) + (max_duration - sum([2**i * (1 - Z(nQubits + i))/2 for i in range(nAncillas)]) - sum([duration[i] * (1 - Z(i))/2 for i in range(nQubits)]))
     # 1st cost_hamiltonian = (-1) * sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)])
     # 2nd cost_hamiltonian = (-1) * sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)]) - max_duration + sum([duration[i] * (1 - Z(i))/2 for i in range(nQubits)])
     # 3rd cost_hamiltonian = (-1) * sum([values[i] * (1 - Z(i)) / (2 * duration[i]) for i in range(nQubits)])
     # 4th cost_hamiltonian = (-1) * (1 - sum([duration[i] * (1 - Z(i))/2 for i in range(nQubits)]) / max_duration) * sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)])
-    cost_hamiltonian = (-1) * sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)]) + (max_duration - sum([values[i] * (1 - Z(i))/2 for i in range(nQubits)]))
 
     return SymbolicHamiltonian(cost_hamiltonian)
 
@@ -85,8 +85,8 @@ diagonalized_solution = sorted(vec, key=lambda x: x[0])
 #                       Utilities
 # ----------------------------------------------------------------------------------------------------
 
-def value_from_eigvec(eigvec:str) -> float: return sum([values[i] for i,b in enumerate(eigvec) if b == '1'])
-def duration_from_eigvec(eigvec:str) -> float: return sum([duration[int(i)] for i,b in enumerate(eigvec) if b == '1'])
+def value_from_eigvec(eigvec:str) -> float: return sum([values[i] for i,b in enumerate(eigvec) if b == '1' and i < nQubits])
+def duration_from_eigvec(eigvec:str) -> float: return sum([duration[int(i)] for i,b in enumerate(eigvec) if b == '1' and i < nQubits])
 
 # ----------------------------------------------------------------------------------------------------
 #                       Plotting
@@ -95,7 +95,7 @@ def duration_from_eigvec(eigvec:str) -> float: return sum([duration[int(i)] for 
 # finding the optimal solution in the data
 optimal_solution = '011101'
 iOpt = 0
-while diagonalized_solution[iOpt][1] != optimal_solution: iOpt += 1
+while diagonalized_solution[iOpt][1][0:6] != optimal_solution: iOpt += 1
 
 max_duration_switch = lambda d: int(d <= max_duration)
 plotting_data = np.array([(loss,value_from_eigvec(binstr),max_duration_switch(duration_from_eigvec(binstr))) for loss,binstr in diagonalized_solution])
@@ -122,5 +122,5 @@ ax.set_ylabel("Loss")
 ax.legend()
 
 # plt.show()
-plt.savefig("plots/H3.pdf",bbox_inches="tight")
+plt.savefig("plots/H0.pdf",bbox_inches="tight")
 plt.close()
