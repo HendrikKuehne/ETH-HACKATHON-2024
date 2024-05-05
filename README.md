@@ -7,7 +7,7 @@ The contents of this repository are our thoughts on the challenge by [Qilimanjar
 
 ## Our solutions
 
-The code in this repository is structured as follows:
+Our solutions are contained in `challenge_description/problem.ipynb`. The remaining code in this repository is structured as follows:
 
 * `QAOA_subspace.ipynb` contains code that investigates circumventing the duration-value conflict by limiting the Hilbert space to a subspace that fulfills the inequality constraint.
 * `QAOA_wholespace.ipynb` contains code that we used to test different Hamiltonians in the context of the QAOA algorithm and familiarize ourselves with the framework of this challenge.
